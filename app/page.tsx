@@ -1,101 +1,122 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import dynamic from "next/dynamic";
+
+// Components
+import WelcomeScreen from "@/components/WelcomeScreen";
+
+// Recruiter Portfolio Components
+import Navbar from "@/components/recruiter/Navbar";
+import Hero from "@/components/recruiter/Hero";
+import About from "@/components/recruiter/About";
+import Experience from "@/components/recruiter/Experience";
+import Projects from "@/components/recruiter/Projects";
+import Skills from "@/components/recruiter/Skills";
+import Contact from "@/components/recruiter/Contact";
+import Footer from "@/components/recruiter/Footer";
+
+// Friend Page Components
+import FriendPage from "@/components/friend/FriendPage";
+
+// Lazy load particle background
+const ParticleBackground = dynamic(() => import("@/components/ParticleBackground"), {
+  ssr: false,
+});
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [userType, setUserType] = useState<"recruiter" | "friend" | null>(null);
+  const [showContent, setShowContent] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const handleSelect = (type: "recruiter" | "friend") => {
+    setUserType(type);
+    // Delay showing content for smooth transition
+    setTimeout(() => {
+      setShowContent(true);
+    }, 100);
+  };
+
+  const handleBackToWelcome = () => {
+    setShowContent(false);
+    setTimeout(() => {
+      setUserType(null);
+    }, 300);
+  };
+
+  return (
+    <main className="relative min-h-screen bg-[#0a0a0f]">
+      <AnimatePresence mode="wait">
+        {!userType && (
+          <motion.div
+            key="welcome"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <WelcomeScreen onSelect={handleSelect} />
+          </motion.div>
+        )}
+
+        {userType === "recruiter" && showContent && (
+          <motion.div
+            key="recruiter"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+            {/* Back button */}
+            <button
+              onClick={handleBackToWelcome}
+              className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-[#1a1a2e]/80 backdrop-blur-sm border border-gray-700/50 rounded-lg text-gray-400 hover:text-white hover:border-amber-500/50 transition-all duration-300"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span className="text-sm">Back</span>
+            </button>
+
+            <ParticleBackground />
+            <div className="relative z-10">
+              <Navbar />
+              <Hero />
+              <About />
+              <Experience />
+              <Projects />
+              <Skills />
+              <Contact />
+              <Footer />
+            </div>
+          </motion.div>
+        )}
+
+        {userType === "friend" && showContent && (
+          <motion.div
+            key="friend"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {/* Back button */}
+            <button
+              onClick={handleBackToWelcome}
+              className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-[#1a1a2e]/80 backdrop-blur-sm border border-gray-700/50 rounded-lg text-gray-400 hover:text-white hover:border-amber-500/50 transition-all duration-300"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span className="text-sm">Back</span>
+            </button>
+
+            <ParticleBackground />
+            <div className="relative z-10">
+              <FriendPage />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </main>
   );
 }
